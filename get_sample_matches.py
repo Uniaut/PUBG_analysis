@@ -35,7 +35,7 @@ if __name__ == '__main__':
     match_list = pubg.samples(start=None, shard='steam').data['relationships']['matches']['data']
     match_id_list = [d['id']for d in match_list]
 
-    for match_id in match_id_list:
+    for match_id in match_id_list[:100]:
         match = pubg.match(match_id)
         print(f'Summary of MATCH: {match_id}')
         print(f'game_mode: {match.game_mode}')

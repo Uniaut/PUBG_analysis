@@ -25,6 +25,12 @@ def save_telemety_as_file(match_id, url):
         print(f'Match - {match_id} saved in telemetry directory')
 
 
+def get_position(tmatch):
+    temp=pubg.match(tmatch)
+    temp_url=temp.telemetry_url
+    position=pubg.telemetry(temp_url).player_positions()
+    return position
+
 if __name__ == '__main__':
     api_key = None
     with open('my_api', mode='r') as api_key_file:
@@ -35,7 +41,7 @@ if __name__ == '__main__':
     match_list = pubg.samples(start=None, shard='steam').data['relationships']['matches']['data']
     match_id_list = [d['id']for d in match_list]
 
-    for match_id in match_id_list[:100]:
+    for match_id in match_id_list[:1]:
         match = pubg.match(match_id)
         print(f'Summary of MATCH: {match_id}')
         print(f'game_mode: {match.game_mode}')
@@ -43,3 +49,4 @@ if __name__ == '__main__':
         print(f'duration: {match.duration}')
         print(f'telemetry_url: {match.telemetry_url}')
         save_telemety_as_file(match_id, match.telemetry_url)
+    

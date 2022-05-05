@@ -1,7 +1,4 @@
 from math import sin, cos
-from io import BytesIO
-import matplotlib as mpl
-import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 import PIL.Image
@@ -18,7 +15,7 @@ import datetime
 def plot_map_img(map_name=None, res_option='Low'):
     url = f'https://github.com/pubg/api-assets/raw/master/Assets/Maps/{map_name}_Main_{res_option}_Res.png'
     img_np = np.array(PIL.Image.open(req.urlopen(url)))
-    img_plot = plt.imshow(img_np)
+    plt.imshow(img_np)
 
 
 def spectrum(progress) -> str:
@@ -55,10 +52,14 @@ def test_positions(step: int):
     ]
 
 
-def winner_position(tmatch):
-    match=pubg.match(tmatch)
+def winner_position(match):
+    '''
+    available only in 'solo' mode
+
+    param:
+    '''
     tel=match.get_telemetry()
-    chicken_player = tel.winner()[0] #1등 플레이어 = chicken
+    chicken_player = tel.winner()[0]
     locations=tel.filter_by("log_player_position") #텔레메트리: 포지션으로 필터
     locations = [location for location in locations if location.elapsed_time > 0]
     #게임 시작 후 경과시간 0 이상인 것들만 찾기// 찾아보니까 본 게임 시작하기 전에 다같이 모여 있는 광장이 있던데 여기서 움직이는 걸 제외한 것이라고 보여요
@@ -75,9 +76,9 @@ def winner_position(tmatch):
                 {
                     'player': player, 
                     'timestamp': dt, 
-                    'x': location.character.location.x / 1000,
-                    'y': location.character.location.y / 1000,
-                    'z': location.character.location.z / 1000,
+                    'x': location.character.location.x / 100,
+                    'y': location.character.location.y / 100,
+                    'z': location.character.location.z / 100,
                 }
             )#1등 이름, 경과시간, x,y,z
 
@@ -91,13 +92,13 @@ if __name__ == '__main__':
         print(api_key)
     
     pubg = PUBG(api_key=api_key, shard="steam")
-    matches_list = pubg.samples(start=None, shard='steam').data['relationships']['matches']['data']
-    match_id_list = [d['id']for d in matches_list]
 
-    match_id = match_id_list[0]
-    sample_position = winner_position(match_id)
+    pubg.match()
+    match = pubg.match('4b172ee6-05f4-4dd2-b759-08421a8b66b4')
+    sample_position = winner_position(match)
     print(sample_position)
+    print(match.map_name)
 
-    plot_map_img('Karakin', 'Low')
+    plot_map_img(match.map_name, 'Low')
     plot_positions(sample_position)
     plt.show()

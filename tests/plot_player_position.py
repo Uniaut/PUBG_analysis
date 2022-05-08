@@ -6,7 +6,7 @@ import PIL.Image
 import os
 import urllib.request as req
 
-from chicken_dinner.models.match import Match as PUBGMatch
+import chicken_dinner.types as PUBGType
 from chicken_dinner.pubgapi import PUBG
 
 
@@ -42,26 +42,26 @@ def plot_positions(positions:list, spectrum_dot_mode=True):
         plt.plot(*axis_key_pos.values())
 
 
-def winner_position(match: PUBGMatch):
+def winner_position(match: PUBGType.Match):
     '''
     available only in 'solo' mode
 
     param:
     '''
-    tel=match.get_telemetry()
+    tel = match.get_telemetry()
     chicken_player = tel.winner()[0]
     locations=tel.filter_by("log_player_position") #텔레메트리: 포지션으로 필터
     # 음수 시간: 대기실에서의 이동
     locations = [location for location in locations if location.elapsed_time > 0]
 
-    player_positions=[] #1등 경로
+    player_positions = [] #1등 경로
     start = datetime.datetime.strptime(tel.filter_by("log_match_start")[0].timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
     #시작 시간 설정
     for location in locations:
         timestamp = datetime.datetime.strptime(location.timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
         dt = (timestamp - start).total_seconds()
         player = location.character.name #log_player_position에 기록된 플레이어의 이름 
-        if player==chicken_player :#1등만 추출
+        if player == chicken_player :#1등만 추출
             player_positions.append(
                 {
                     'player': player, 

@@ -1,10 +1,7 @@
-
-from dataclasses import asdict
 import gzip
 import json
 import os
 from re import A, X
-#import urllib.request
 from chicken_dinner.pubgapi import PUBG
 import datetime
 import pandas as pd
@@ -151,6 +148,11 @@ def engage_circle(positions:list):
         plt.gca().add_patch(victim_rect)
 
 #pubg.match()
+
+api_key = None
+with open('.\\my_api', mode='r') as api_key_file:
+    api_key = api_key_file.read()
+    print(api_key)
 pubg = PUBG(api_key=api_key, shard="steam")
 match = pubg.match('c4b89079-795b-49ff-a134-c02b6aa73c77')
 

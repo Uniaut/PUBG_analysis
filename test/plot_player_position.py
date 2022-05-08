@@ -1,21 +1,20 @@
-from math import sin, cos
+import datetime
+import json
 import matplotlib.pyplot as plt
 import numpy as np
 import PIL.Image
-import os.path
+import os
 import urllib.request as req
 
-import gzip
-import json
-import os
+from chicken_dinner.models.match import Match as PUBGMatch
 from chicken_dinner.pubgapi import PUBG
-import datetime
 
 
 def plot_map_img(map_name=None, res_option='Low'):
     url = f'https://github.com/pubg/api-assets/raw/master/Assets/Maps/{map_name}_Main_{res_option}_Res.png'
     img_np = np.array(PIL.Image.open(req.urlopen(url)))
     plt.imshow(img_np)
+
 
 
 def spectrum(progress) -> str:
@@ -31,6 +30,7 @@ def spectrum(progress) -> str:
 
     return '#%02x%02x%02x' % value
 
+
 def plot_positions(positions:list, spectrum_dot_mode=True):
     if spectrum_dot_mode:
         for idx, pos in enumerate(positions):
@@ -42,17 +42,7 @@ def plot_positions(positions:list, spectrum_dot_mode=True):
         plt.plot(*axis_key_pos.values())
 
 
-def test_positions(step: int):
-    return [
-        {
-            'x': sin(i * 5 / step) * 200 + 400,
-            'y': cos(i * 5 / step) * 200 + 400,
-            'z': sin(i * 5 / step) * 200 + 400,
-        } for i in range(step)
-    ]
-
-
-def winner_position(match):
+def winner_position(match: PUBGMatch):
     '''
     available only in 'solo' mode
 
@@ -61,10 +51,10 @@ def winner_position(match):
     tel=match.get_telemetry()
     chicken_player = tel.winner()[0]
     locations=tel.filter_by("log_player_position") #텔레메트리: 포지션으로 필터
+    # 음수 시간: 대기실에서의 이동
     locations = [location for location in locations if location.elapsed_time > 0]
-    #게임 시작 후 경과시간 0 이상인 것들만 찾기// 찾아보니까 본 게임 시작하기 전에 다같이 모여 있는 광장이 있던데 여기서 움직이는 걸 제외한 것이라고 보여요
 
-    player_positions=[] #1등 경로 
+    player_positions=[] #1등 경로
     start = datetime.datetime.strptime(tel.filter_by("log_match_start")[0].timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
     #시작 시간 설정
     for location in locations:
@@ -76,29 +66,41 @@ def winner_position(match):
                 {
                     'player': player, 
                     'timestamp': dt, 
-                    'x': location.character.location.x / 100,
-                    'y': location.character.location.y / 100,
-                    'z': location.character.location.z / 100,
+                    'x': location.character.location.x / 1000,
+                    'y': location.character.location.y / 1000,
+                    'z': location.character.location.z / 1000,
                 }
             )#1등 이름, 경과시간, x,y,z
 
     return player_positions
 
 
+def open_match(match_id):
+    match_path = os.path.join('C:/Users/kunwo/Documents/PUBG_API_takealook\PUBG_analysis\\samples\\samples', f'match_{match_id}', 'match.json')
+    with open(match_path, 'r') as match_file:
+        raw_json = json.load(match_file.read())
+    
+    return raw_json
+
+
 if __name__ == '__main__':
     api_key = None
-    with open('./my_api', mode='r') as api_key_file:
+    with open('.\\my_api', mode='r') as api_key_file:
         api_key = api_key_file.read()
         print(api_key)
     
     pubg = PUBG(api_key=api_key, shard="steam")
 
-    pubg.match()
-    match = pubg.match('4b172ee6-05f4-4dd2-b759-08421a8b66b4')
+    sample_match_id = 'ca16964d-f44b-4714-b40c-78bb8607b688'
+    '''
+    raw_json = open_match(sample_match_id)
+    match = PUBGMatch(raw=raw_json)
+    '''
+    match = pubg.match(sample_match_id)
     sample_position = winner_position(match)
     print(sample_position)
-    print(match.map_name)
 
-    plot_map_img(match.map_name, 'Low')
+    map_name = match.map_name.replace(' ', '_')
+    plot_map_img(map_name, 'Low')
     plot_positions(sample_position)
     plt.show()

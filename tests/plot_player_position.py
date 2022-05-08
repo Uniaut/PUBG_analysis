@@ -50,7 +50,7 @@ def winner_position(match: PUBGType.Match):
     '''
     tel = match.get_telemetry()
     chicken_player = tel.winner()[0]
-    locations=tel.filter_by("log_player_position") #텔레메트리: 포지션으로 필터
+    locations = tel.filter_by("log_player_position") #텔레메트리: 포지션으로 필터
     # 음수 시간: 대기실에서의 이동
     locations = [location for location in locations if location.elapsed_time > 0]
 

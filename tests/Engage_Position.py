@@ -79,7 +79,7 @@ def winner_position(match: PUBGType.Match):
 
     #log_player_attack#log_player_take_damage#log_player_use_throwable#log_weapon_fire_count
 
-def Winner_Kill_Position(match):
+def Winner_Kill_Position(match: PUBGType.Match):
     tel=match.get_telemetry()
     chicken_player=tel.winner()[0] #1등 플레이어 =chicken
     start = datetime.datetime.strptime(tel.filter_by("log_match_start")[0].timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -109,7 +109,7 @@ def Winner_Kill_Position(match):
                 'Victim_Location_Z' : kill_event.victim.location.z/1000,} )
     return kill_position
  
-def Winner_Engage_Position(match):
+def Winner_Engage_Position(match: PUBGType.Match):
     tel=match.get_telemetry()
     chicken_player=tel.winner()[0] #1등 플레이어 =chicken
     start = datetime.datetime.strptime(tel.filter_by("log_match_start")[0].timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -138,14 +138,14 @@ def Winner_Engage_Position(match):
 
 def engage_circle(positions:list):
     for idx, pos in enumerate(positions):
-        winner_x,winner_y,victim_x,victim_y=pos['x'],pos['y'],pos['Victim_Location_X'],pos['Victim_Location_Y']
-        x= (winner_x+ victim_x)/2
-        y= (winner_y+ victim_y)/2
-        center=(x,y)#교전시 적과 나 사이의 가운데
-        radius=math.dist([winner_x,winner_y],[victim_x,victim_y])+2# 이 반지름은 교전시 죽인 녀석과 거리 / 2 보다 조금 크면 될듯
-        engage_circle=patches.Circle(center,radius,fill=False,ec='r')
+        winner_x, winner_y, victim_x, victim_y=pos['x'], pos['y'], pos['Victim_Location_X'], pos['Victim_Location_Y']
+        x = (winner_x + victim_x) / 2
+        y = (winner_y + victim_y) / 2
+        center = (x,y)#교전시 적과 나 사이의 가운데
+        radius = math.dist([winner_x,winner_y], [victim_x,victim_y]) + 2# 이 반지름은 교전시 죽인 녀석과 거리 / 2 보다 조금 크면 될듯
+        engage_circle = patches.Circle(center, radius, fill=False, ec='r')
         plt.gca().add_patch(engage_circle)
-        victim_rect=patches.Rectangle((victim_x,victim_y),0.5,0.5,color='white')
+        victim_rect = patches.Rectangle((victim_x,victim_y),0.5,0.5,color='white')
         plt.gca().add_patch(victim_rect)
 
 #pubg.match()

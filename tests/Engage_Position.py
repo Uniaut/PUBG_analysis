@@ -1,20 +1,21 @@
 import gzip
 import json
 import os
-from re import A, X
-from chicken_dinner.pubgapi import PUBG
 import datetime
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from math import sin, cos
 import PIL.Image
 import os.path
-import urllib.request as req
 
+import matplotlib.pyplot as plt
 import matplotlib.patches as patches # 원 추가
 import math
 from matplotlib.animation import FuncAnimation
+import pandas as pd
+import urllib.request as req
+
+from chicken_dinner.pubgapi import PUBG
+import chicken_dinner.types as PUBGType
 
 def plot_map_img(map_name=None, res_option='Low'):
     url = f'https://github.com/pubg/api-assets/raw/master/Assets/Maps/{map_name}_Main_{res_option}_Res.png'
@@ -45,7 +46,7 @@ def plot_positions(positions:list, spectrum_dot_mode=True):
         }
         plt.plot(*axis_key_pos.values())
 
-def winner_position(match):
+def winner_position(match: PUBGType.Match):
     '''
     available only in 'solo' mode
     param:

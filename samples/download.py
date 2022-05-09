@@ -27,12 +27,12 @@ import json
 import os
 import urllib.request
 
-from chicken_dinner.models.match import Match as PUBGMatch
+import chicken_dinner.types as PUBGType
 from chicken_dinner.pubgapi import PUBG
 
 import chicken_dinner
 
-def save_match_as_files(match: PUBGMatch, path):
+def save_match_as_files(match: PUBGType.Match, path):
     match_path = os.path.join(path, f'match_{match.id}')
     os.makedirs(match_path, exist_ok=True)
 

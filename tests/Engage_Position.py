@@ -1,20 +1,21 @@
 import gzip
 import json
 import os
-from re import A, X
-from chicken_dinner.pubgapi import PUBG
 import datetime
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from math import sin, cos
 import PIL.Image
 import os.path
-import urllib.request as req
 
+import matplotlib.pyplot as plt
 import matplotlib.patches as patches # 원 추가
 import math
 from matplotlib.animation import FuncAnimation
+import pandas as pd
+import urllib.request as req
+
+from chicken_dinner.pubgapi import PUBG
+import chicken_dinner.types as PUBGType
 
 def plot_map_img(map_name=None, res_option='Low'):
     url = f'https://github.com/pubg/api-assets/raw/master/Assets/Maps/{map_name}_Main_{res_option}_Res.png'
@@ -45,7 +46,7 @@ def plot_positions(positions:list, spectrum_dot_mode=True):
         }
         plt.plot(*axis_key_pos.values())
 
-def winner_position(match):
+def winner_position(match: PUBGType.Match):
     '''
     available only in 'solo' mode
     param:
@@ -78,7 +79,7 @@ def winner_position(match):
 
     #log_player_attack#log_player_take_damage#log_player_use_throwable#log_weapon_fire_count
 
-def Winner_Kill_Position(match):
+def Winner_Kill_Position(match: PUBGType.Match):
     tel=match.get_telemetry()
     chicken_player=tel.winner()[0] #1등 플레이어 =chicken
     start = datetime.datetime.strptime(tel.filter_by("log_match_start")[0].timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -108,7 +109,7 @@ def Winner_Kill_Position(match):
                 'Victim_Location_Z' : kill_event.victim.location.z/1000,} )
     return kill_position
  
-def Winner_Engage_Position(match):
+def Winner_Engage_Position(match: PUBGType.Match):
     tel=match.get_telemetry()
     chicken_player=tel.winner()[0] #1등 플레이어 =chicken
     start = datetime.datetime.strptime(tel.filter_by("log_match_start")[0].timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -137,14 +138,14 @@ def Winner_Engage_Position(match):
 
 def engage_circle(positions:list):
     for idx, pos in enumerate(positions):
-        winner_x,winner_y,victim_x,victim_y=pos['x'],pos['y'],pos['Victim_Location_X'],pos['Victim_Location_Y']
-        x= (winner_x+ victim_x)/2
-        y= (winner_y+ victim_y)/2
-        center=(x,y)#교전시 적과 나 사이의 가운데
-        radius=math.dist([winner_x,winner_y],[victim_x,victim_y])+2# 이 반지름은 교전시 죽인 녀석과 거리 / 2 보다 조금 크면 될듯
-        engage_circle=patches.Circle(center,radius,fill=False,ec='r')
+        winner_x, winner_y, victim_x, victim_y=pos['x'], pos['y'], pos['Victim_Location_X'], pos['Victim_Location_Y']
+        x = (winner_x + victim_x) / 2
+        y = (winner_y + victim_y) / 2
+        center = (x,y)#교전시 적과 나 사이의 가운데
+        radius = math.dist([winner_x,winner_y], [victim_x,victim_y]) + 2# 이 반지름은 교전시 죽인 녀석과 거리 / 2 보다 조금 크면 될듯
+        engage_circle = patches.Circle(center, radius, fill=False, ec='r')
         plt.gca().add_patch(engage_circle)
-        victim_rect=patches.Rectangle((victim_x,victim_y),0.5,0.5,color='white')
+        victim_rect = patches.Rectangle((victim_x,victim_y),0.5,0.5,color='white')
         plt.gca().add_patch(victim_rect)
 
 #pubg.match()

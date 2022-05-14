@@ -129,7 +129,7 @@ def winner_victim_engage_circumstance(engage_dictionary, input_kill_position): #
 
 if __name__ == '__main__':
     api_key = None
-    with open('.\\my_api', mode='r') as api_key_file:
+    with open(r'.\my_api', mode='r') as api_key_file:
         api_key = api_key_file.read()
 
     pubg = PUBG(api_key=api_key, shard="steam")

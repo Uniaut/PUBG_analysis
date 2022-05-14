@@ -1,19 +1,12 @@
 import datetime
 import json
 import matplotlib.pyplot as plt
-import numpy as np
-import PIL.Image
 import os
-import urllib.request as req
 
-import chicken_dinner.types as PUBGType
+import chicken_dinner.models.match as PUBG_match
+import chicken_dinner.models.telemetry as PUBG_telemetry
 from chicken_dinner.pubgapi import PUBG
-
-
-def plot_map_img(map_name=None, res_option='Low'):
-    url = f'https://github.com/pubg/api-assets/raw/master/Assets/Maps/{map_name}_Main_{res_option}_Res.png'
-    img_np = np.array(PIL.Image.open(req.urlopen(url)))
-    plt.imshow(img_np)
+import util
 
 
 
@@ -42,13 +35,13 @@ def plot_positions(positions:list, spectrum_dot_mode=True):
         plt.plot(*axis_key_pos.values())
 
 
-def winner_position(match: PUBGType.Match):
+def winner_position(match: PUBG_match.Match):
     '''
     available only in 'solo' mode
 
     param:
     '''
-    tel = match.get_telemetry()
+    tel: PUBG_telemetry.Telemetry = match.get_telemetry()
     chicken_player = tel.winner()[0]
     locations = tel.filter_by("log_player_position") #텔레메트리: 포지션으로 필터
     # 음수 시간: 대기실에서의 이동
@@ -101,6 +94,6 @@ if __name__ == '__main__':
     print(sample_position)
 
     map_name = match.map_name.replace(' ', '_')
-    plot_map_img(map_name, 'Low')
+    util.plot_map(map_name, 'Low')
     plot_positions(sample_position)
     plt.show()

@@ -3,8 +3,8 @@ import json
 import matplotlib.pyplot as plt
 import os
 
-import chicken_dinner.models.match as PUBG_match
-import chicken_dinner.models.telemetry as PUBG_telemetry
+import chicken_dinner.models.match as Match
+import chicken_dinner.models.telemetry as Telemetry
 from chicken_dinner.pubgapi import PUBG
 import util
 
@@ -34,13 +34,13 @@ def plot_positions(positions: list, spectrum_dot_mode=True):
         plt.plot(*axis_key_pos.values())
 
 
-def winner_position(match: PUBG_match.Match):
+def winner_position(match: Match.Match):
     """
     available only in 'solo' mode
 
     param:
     """
-    tel: PUBG_telemetry.Telemetry = match.get_telemetry()
+    tel: Telemetry.Telemetry = match.get_telemetry()
     chicken_player = tel.winner()[0]
     locations = tel.filter_by("log_player_position")  # 텔레메트리: 포지션으로 필터
     # 음수 시간: 대기실에서의 이동
@@ -73,9 +73,9 @@ def winner_position(match: PUBG_match.Match):
 
 def open_match(match_id):
     match_path = os.path.join(
-        "C:/Users/kunwo/Documents/PUBG_API_takealook\PUBG_analysis\\samples\\samples",
-        f"match_{match_id}",
-        "match.json",
+        r'C:\Users\kunwo\Documents\PUBG_API_takealook\PUBG_analysis\samples\samples',
+        f'match_{match_id}',
+        'match.json',
     )
     with open(match_path, "r") as match_file:
         raw_json = json.load(match_file.read())
@@ -89,18 +89,17 @@ if __name__ == "__main__":
         api_key = api_key_file.read()
         print(api_key)
 
-    pubg = PUBG(api_key=api_key, shard="steam")
+    pubg = PUBG(api_key=api_key, shard='steam')
 
-    sample_match_id = "ca16964d-f44b-4714-b40c-78bb8607b688"
-    """
+    sample_match_id = 'ca16964d-f44b-4714-b40c-78bb8607b688'
+    '''
     raw_json = open_match(sample_match_id)
     match = PUBGMatch(raw=raw_json)
-    """
+    '''
     match = pubg.match(sample_match_id)
     sample_position = winner_position(match)
-    print(sample_position)
 
-    map_name = match.map_name.replace(" ", "_")
-    util.plot_map(map_name, "Low")
+    map_id = match.map_id.replace(" ", "_")
+    util.plot_map(map_id, "High")
     plot_positions(sample_position)
     plt.show()

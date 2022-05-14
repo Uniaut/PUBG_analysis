@@ -8,7 +8,8 @@ import urllib.request as req
 import chicken_dinner.assets.maps as Maps
 
 
-def plot_map(map_name: str=None, res_option: str='Low'):
-    map_path = os.path.join(Maps.MAP_ASSET_PATH, f'{map_name}_{res_option}_Res.png')
+def plot_map(map_name: str = None, res_option: str = "Low"):
+    map_path = os.path.join(Maps.MAP_ASSET_PATH, f"{map_name}_{res_option}_Res.png")
     img_np = np.array(PIL.Image.open(map_path))
+    print(img_np.shape)
     plt.imshow(img_np)

@@ -14,8 +14,9 @@ from matplotlib.animation import FuncAnimation
 import pandas as pd
 import urllib.request as req
 
+import chicken_dinner.models.match as PUBG_match
+import chicken_dinner.models.telemetry as PUBG_telemetry
 from chicken_dinner.pubgapi import PUBG
-import chicken_dinner.types as PUBGType
 
 def plot_map_img(map_name=None, res_option='Low'):
     url = f'https://github.com/pubg/api-assets/raw/master/Assets/Maps/{map_name}_Main_{res_option}_Res.png'
@@ -46,7 +47,7 @@ def plot_positions(positions:list, spectrum_dot_mode=True):
         }
         plt.plot(*axis_key_pos.values())
 
-def winner_position(match: PUBGType.Match):
+def winner_position(match: PUBG_match.Match):
     '''
     available only in 'solo' mode
     param:
@@ -79,7 +80,7 @@ def winner_position(match: PUBGType.Match):
 
     #log_player_attack#log_player_take_damage#log_player_use_throwable#log_weapon_fire_count
 
-def Winner_Kill_Position(match: PUBGType.Match):
+def Winner_Kill_Position(match: PUBG_match.Match):
     tel=match.get_telemetry()
     chicken_player=tel.winner()[0] #1등 플레이어 =chicken
     start = datetime.datetime.strptime(tel.filter_by("log_match_start")[0].timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -109,7 +110,7 @@ def Winner_Kill_Position(match: PUBGType.Match):
                 'Victim_Location_Z' : kill_event.victim.location.z/1000,} )
     return kill_position
  
-def Winner_Engage_Position(match: PUBGType.Match):
+def Winner_Engage_Position(match: PUBG_match.Match):
     tel=match.get_telemetry()
     chicken_player=tel.winner()[0] #1등 플레이어 =chicken
     start = datetime.datetime.strptime(tel.filter_by("log_match_start")[0].timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")

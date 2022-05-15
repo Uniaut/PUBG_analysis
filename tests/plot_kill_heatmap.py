@@ -1,3 +1,4 @@
+import datetime
 import json
 import matplotlib.pyplot as plt
 import os
@@ -5,7 +6,7 @@ import os
 import chicken_dinner.models.match as Match
 import chicken_dinner.models.telemetry as Telemetry
 from chicken_dinner.pubgapi import PUBG
-import utils
+import utils.kill
 
 
 def spectrum(progress) -> str:
@@ -22,15 +23,21 @@ def spectrum(progress) -> str:
     return "#%02x%02x%02x" % value
 
 
-def plot_positions(positions: list, spectrum_dot_mode=True):
-    if spectrum_dot_mode:
-        for idx, pos in enumerate(positions):
-            location = pos[1]
-            x, y, z = location
-            plt.plot(x, y, color=spectrum(idx / len(positions)), marker="o")
-    else:
-        axis_key_pos = {axis: [pos[1][axis] for pos in positions] for axis in [0, 1]}
-        plt.plot(*axis_key_pos.values())
+def plot_kill(kills: list, *, enable_lines: bool):
+    for killer_loction, victim_lociton in kills:
+        kx, ky, _ = killer_loction
+        vx, vy, _ = victim_lociton
+        plt.plot(kx, ky, color="#FF0000", marker="x")
+        plt.plot(vx, vy, color="#00FF00", marker="o")
+
+        if enable_lines:
+            plt.arrow(
+                kx,
+                ky,
+                vx - kx,
+                vy - ky,
+                color="white",
+            )
 
 
 def open_tel(match_id):
@@ -47,7 +54,7 @@ def open_tel(match_id):
 
 if __name__ == "__main__":
     api_key = None
-    with open(".\\my_api", mode="r") as api_key_file:
+    with open(r".\my_api", mode="r") as api_key_file:
         api_key = api_key_file.read()
         print(api_key)
 
@@ -57,11 +64,9 @@ if __name__ == "__main__":
     match = pubg.match(sample_match_id)
     tel = Telemetry.Telemetry.from_json(open_tel(sample_match_id))
 
-    sample_position = utils.get_position(tel, search_all=True)[
-        match.winner.player_names[0]
-    ].positions
+    kill_datas = utils.kill.get_kills(tel)
 
     map_id = match.map_id.replace(" ", "_")
     utils.plot_map(map_id, "High")
-    plot_positions(sample_position, spectrum_dot_mode=False)
+    plot_kill(kill_datas, enable_lines=True)
     plt.show()

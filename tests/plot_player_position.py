@@ -32,18 +32,18 @@ def plot_positions(positions: list, spectrum_dot_mode=True):
                 x, y, color=spectrum(idx / len(positions)), marker="o"
             )
     else:
-        axis_key_pos = {axis: [pos[axis] for pos in positions] for axis in [x, y]}
+        axis_key_pos = {axis: [pos[1][axis] for pos in positions] for axis in [0, 1]}
         plt.plot(*axis_key_pos.values())
 
 
-def open_match(match_id):
-    match_path = os.path.join(
+def open_tel(match_id):
+    tel_path = os.path.join(
         r'C:\Users\kunwo\Documents\PUBG_API_takealook\PUBG_analysis\samples\samples',
         f'match_{match_id}',
-        'match.json',
+        'telemetry.json',
     )
-    with open(match_path, "r") as match_file:
-        raw_json = json.load(match_file.read())
+    with open(tel_path, "r") as tel_file:
+        raw_json = json.load(tel_file)
 
     return raw_json
 
@@ -57,14 +57,12 @@ if __name__ == "__main__":
     pubg = PUBG(api_key=api_key, shard='steam')
 
     sample_match_id = 'ca16964d-f44b-4714-b40c-78bb8607b688'
-    '''
-    raw_json = open_match(sample_match_id)
-    match = PUBGMatch(raw=raw_json)
-    '''
     match = pubg.match(sample_match_id)
-    sample_position = utils.get_position(match.get_telemetry(), search_all=True)[match.winner.player_names[0]].positions
+    tel = Telemetry.Telemetry.from_json(open_tel(sample_match_id))
+
+    sample_position = utils.get_position(tel, search_all=True)[match.winner.player_names[0]].positions
 
     map_id = match.map_id.replace(" ", "_")
     utils.plot_map(map_id, "High")
-    plot_positions(sample_position)
+    plot_positions(sample_position, spectrum_dot_mode=False)
     plt.show()

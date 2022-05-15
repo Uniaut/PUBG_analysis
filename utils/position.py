@@ -29,7 +29,7 @@ def get_position(telemetry_obj: Telemetry.Telemetry, *, search_all: bool) -> dic
         elapsed_time = datetime.datetime.strptime(
             timestamp, "%Y-%m-%dT%H:%M:%S.%fZ"
         ) - datetime.datetime.strptime(start_timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
-        location_tuple = (location.x / 100, location.y / 100, location.z / 100)
+        location_tuple = tuple(map(lambda v: v / 100, (location.x, location.y, location.z)))
         temp_dict.setdefault(name, []).append(
             (elapsed_time.total_seconds(), location_tuple)
         )

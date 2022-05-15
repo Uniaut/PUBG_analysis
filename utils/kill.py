@@ -1,13 +1,20 @@
 import datetime
 
-
 import chicken_dinner.models.match as Match
 import chicken_dinner.models.telemetry as Telemetry
 from chicken_dinner.pubgapi import PUBG
 
 
+def preprocess_location(location) -> tuple:
+    return tuple(map(lambda v: v / 100, (location.x, location.y, location.z)))
+
+
 def get_kills(telemetry_obj: Telemetry.Telemetry):
-    modded_events = [(event.killer, event.victim) for event in telemetry_obj.filter_by('log_player_kill_v2')]
+    modded_events = [
+        (preprocess_location(event.killer.location), preprocess_location(event.victim.location))
+        for event in telemetry_obj.filter_by('log_player_kill_v2')
+        if event.killer is not None
+    ]
     return modded_events
 
 if __name__ == "__main__":

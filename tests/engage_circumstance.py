@@ -146,13 +146,13 @@ def winner_victim_engage_circumstance(engage_dictionary, input_kill_position): #
         y = (center[1] + (winner_y + victim_y) / 2) / (number_of_engagement + 1)
         center=(x,y) # 사망 당시 포지션+교전포지션에 따른 중심좌표
         plt.scatter(victim_killed_position_x, victim_killed_position_y, color=[1,(1/number_of_victims)*i,0.4],marker='x')    
-        engage_circle=patches.Circle(center,engage_circle_radius,fill=False,ec='r')
+        engage_circle = patches.Circle(center, engage_circle_radius,fill=False, ec='r')
         plt.gca().add_patch(engage_circle)
 
 
 if __name__ == '__main__':
     api_key = None
-    with open('.\\my_api', mode='r') as api_key_file:
+    with open(r'.\my_api', mode='r') as api_key_file:
         api_key = api_key_file.read()
 
 

@@ -1,4 +1,4 @@
-samples/*
+analysis/samples/*
 my_api
 
 __pycache__/*

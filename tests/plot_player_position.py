@@ -5,7 +5,9 @@ import os
 import chicken_dinner.models.match as Match
 import chicken_dinner.models.telemetry as Telemetry
 from chicken_dinner.pubgapi import PUBG
-import utils
+
+import analysis.utils.position as Position
+import analysis.utils.plot as Plot
 
 
 def spectrum(progress) -> str:
@@ -57,11 +59,11 @@ if __name__ == "__main__":
     match = pubg.match(sample_match_id)
     tel = Telemetry.Telemetry.from_json(open_tel(sample_match_id))
 
-    sample_position = utils.get_position(tel, search_all=True)[
+    sample_position = Position.get_position(tel, search_all=True)[
         match.winner.player_names[0]
     ].positions
 
     map_id = match.map_id.replace(" ", "_")
-    utils.plot_map(map_id, "High")
+    Plot.plot_map(map_id, "High")
     plot_positions(sample_position, spectrum_dot_mode=False)
     plt.show()

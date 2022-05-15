@@ -6,7 +6,9 @@ import os
 import chicken_dinner.models.match as Match
 import chicken_dinner.models.telemetry as Telemetry
 from chicken_dinner.pubgapi import PUBG
-import utils.kill
+
+import analysis.utils.kill as Kill
+import analysis.utils.plot as Plot
 
 def spectrum(progress) -> str:
     if progress < 1 / 3:
@@ -59,7 +61,7 @@ if __name__ == "__main__":
 
     pubg = PUBG(api_key=api_key, shard='steam')
     
-    samples = pubg.samples().match_ids
+    samples = pubg.samples().match_ids[:20]
     for s in samples:
         match = pubg.match(s)
 
@@ -70,12 +72,12 @@ if __name__ == "__main__":
         print(match.id, 'is working!')
         tel = match.get_telemetry()
 
-        kill_datas = utils.kill.get_kills(tel)
+        kill_datas = Kill.get_kills(tel)
 
         map_id: str = match.map_id.replace(" ", "_")
         for b, f in [('Heaven', 'Haven'), ('Tiger', 'Taego')]:
             map_id = map_id.replace(b, f)
         plot_kill(kill_datas, enable_lines=True)
     
-    utils.plot_map(map_id, "High")
+    Plot.plot_map(map_id, "High")
     plt.show()

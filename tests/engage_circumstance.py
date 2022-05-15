@@ -16,8 +16,27 @@ import pandas as pd
 import urllib.request as req
 
 from chicken_dinner.pubgapi import PUBG
-#import chicken_dinner.types as PUBGType
+map_dimensions = {
+    "Desert_Main": [819200, 819200],
+    "Erangel_Main": [819200, 819200],
+    "Savage_Main": [409600, 409600],
+    "DihorOtok_Main": [614400, 614400],
+    "Range_Main": [204800, 204800],
+    "Baltic_Main": [819200, 819200],
+    "Summerland_Main": [204800, 204800],
+}
+def mapsize(map_name):
+    map_name_list=list(map_dimensions.keys())
 
+    map_x, map_y=0,0
+    for i in range(len(map_name_list)):
+        if map_name == map_name_list[i] :
+            map_x = map_dimensions[map_name][0] / 800
+            map_y = map_dimensions[map_name][1] / 800
+            break
+    return map_x, map_y
+
+    
 def plot_map_img(map_name=None, res_option='Low'):
     url = f'https://github.com/pubg/api-assets/raw/master/Assets/Maps/{map_name}_Main_{res_option}_Res.png'
     img_np = np.array(PIL.Image.open(req.urlopen(url)))
@@ -30,6 +49,7 @@ def Winner_Kill_Position(match):
     kill_log = tel.filter_by("log_player_kill_v2")
     global kill_position
     kill_position=[]
+    map_x, map_y = mapsize(match.map_id)
 
     for kill_event in kill_log:
         timestamp = datetime.datetime.strptime(kill_event.timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -43,12 +63,12 @@ def Winner_Kill_Position(match):
                 'Killer' : player,
                 'Victim' : kill_event.victim.name,
                 'Time' : dt,
-                'x' : kill_event.finisher.location.x/1000,
-                'y' : kill_event.finisher.location.y/1000,
-                'z' : kill_event.finisher.location.z/1000,
-                'Victim_Location_X' : kill_event.victim.location.x/1000,
-                'Victim_Location_Y' : kill_event.victim.location.y/1000,
-                'Victim_Location_Z' : kill_event.victim.location.z/1000,} )
+                'x' : kill_event.finisher.location.x/map_x,
+                'y' : kill_event.finisher.location.y/map_y,
+                'z' : kill_event.finisher.location.z,
+                'Victim_Location_X' : kill_event.victim.location.x/map_x,
+                'Victim_Location_Y' : kill_event.victim.location.y/map_y,
+                'Victim_Location_Z' : kill_event.victim.location.z} )
     return kill_position
  
 def Winner_Engage_Position(match, input_kill_position): # Engage_Victim을 구할 때 1등이 죽인 Victim들만 고려
@@ -57,6 +77,8 @@ def Winner_Engage_Position(match, input_kill_position): # Engage_Victim을 구�
     start = datetime.datetime.strptime(tel.filter_by("log_match_start")[0].timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
     engage_log = tel.filter_by("log_player_take_damage")
     
+    map_x, map_y = mapsize(match.map_id)
+
     victim_name = [] # kill_position에서 구한 victim 이름 저장할 리스트
     engage_position = {} # 각각의 victim_name은 key, value=해당 victim의 log_player_take_damage
     for i in input_kill_position:
@@ -81,13 +103,14 @@ def Winner_Engage_Position(match, input_kill_position): # Engage_Victim을 구�
                         'Attacker' : chicken_player,
                         'Victim' : engage_event.victim.name,
                         'Time' : engage_dt,
-                        'x' : engage_event.attacker.location.x/1000,
-                        'y' : engage_event.attacker.location.y/1000,
-                        'z' : engage_event.attacker.location.z/1000,
-                        'Victim_Location_X' : engage_event.victim.location.x/1000,
-                        'Victim_Location_Y' : engage_event.victim.location.y/1000,
-                        'Victim_Location_Z' : engage_event.victim.location.z/1000,
+                        'x' : engage_event.attacker.location.x/map_x,
+                        'y' : engage_event.attacker.location.y/map_y,
+                        'z' : engage_event.attacker.location.z,
+                        'Victim_Location_X' : engage_event.victim.location.x/map_x,
+                        'Victim_Location_Y' : engage_event.victim.location.y/map_y,
+                        'Victim_Location_Z' : engage_event.victim.location.z
                     } )#engage_position['a']의 값으로 위와 같은 dictonary형 데이터 추가
+        #print(engage_event.victim.location.x, engage_event.victim.location.y)
     return engage_position
 
 def winner_victim_engage_circumstance(engage_dictionary, input_kill_position): #기존에 있던 winner_kill_position, engage_circle까지 한번에 들어있음.
@@ -132,8 +155,11 @@ if __name__ == '__main__':
     with open('.\\my_api', mode='r') as api_key_file:
         api_key = api_key_file.read()
 
+
     pubg = PUBG(api_key=api_key, shard="steam")
     match = pubg.match('c4b89079-795b-49ff-a134-c02b6aa73c77')
+
+
     winner_engage_position=Winner_Engage_Position(match,Winner_Kill_Position(match))
     winner_victim_engage_circumstance(winner_engage_position,Winner_Kill_Position(match))
     plot_map_img(match.map_name, 'Low')

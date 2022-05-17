@@ -9,6 +9,8 @@ from chicken_dinner.pubgapi import PUBG
 
 import analysis.utils.kill as Kill
 import analysis.utils.plot as Plot
+import analysis.samples.load as Load
+import tests.heatmap as Heatmap
 
 def spectrum(progress) -> str:
     if progress < 1 / 3:
@@ -24,14 +26,20 @@ def spectrum(progress) -> str:
     return "#%02x%02x%02x" % value
 
 
-def plot_kill(kills: list, *, enable_lines: bool):
+def plot_kill(kills: list, *, mode: str, hset: tuple):
     for killer_loction, victim_lociton in kills:
         kx, ky, _ = killer_loction
         vx, vy, _ = victim_lociton
-        plt.plot(kx, ky, color='#FF0000', marker="x")
-        plt.plot(vx, vy, color='#00FF00', marker="o")
 
-        if enable_lines:
+        if '.' in mode:
+            plt.plot(kx, ky, color='#FF0000', marker="x")
+            plt.plot(vx, vy, color='#00FF00', marker="o")
+        
+        if 'O' in mode:
+            Heatmap.add_sticker(*hset, pos=(kx, ky), amp=1.0)
+            Heatmap.add_sticker(*hset, pos=(vx, vy), amp=-1.0)
+
+        if '-' in mode:
             plt.arrow(
                 kx,
                 ky,
@@ -39,18 +47,6 @@ def plot_kill(kills: list, *, enable_lines: bool):
                 vy - ky,
                 color="white",
             )
-
-
-def open_tel(match_id):
-    tel_path = os.path.join(
-        r'C:\Users\kunwo\Documents\PUBG_API_takealook\PUBG_analysis\samples\samples',
-        f'match_{match_id}',
-        'telemetry.json',
-    )
-    with open(tel_path, "r") as tel_file:
-        raw_json = json.load(tel_file)
-
-    return raw_json
 
 
 if __name__ == "__main__":
@@ -61,23 +57,30 @@ if __name__ == "__main__":
 
     pubg = PUBG(api_key=api_key, shard='steam')
     
-    samples = pubg.samples().match_ids[:20]
+    hset = Heatmap.ready_heatmap()
+
+    samples = pubg.samples().match_ids[:5]
     for s in samples:
         match = pubg.match(s)
 
-        if match.map_id != 'Desert_Main':
+        if match.map_id != 'Baltic_Main':
             print('Nah.', match.game_mode, match.map_id)
             continue
         
         print(match.id, 'is working!')
-        tel = match.get_telemetry()
+        try:
+            tel = Load.load(match.id)
+        except:
+            tel = match.get_telemetry()
 
         kill_datas = Kill.get_kills(tel)
 
         map_id: str = match.map_id.replace(" ", "_")
-        for b, f in [('Heaven', 'Haven'), ('Tiger', 'Taego')]:
+        for b, f in [('Heaven', 'Haven'), ('Tiger', 'Taego'), ('Baltic', 'Erangel')]:
             map_id = map_id.replace(b, f)
-        plot_kill(kill_datas, enable_lines=True)
+        plot_kill(kill_datas, mode='O', hset=hset)
     
+    Heatmap.plot_heatmap(*hset)
+
     Plot.plot_map(map_id, "High")
     plt.show()

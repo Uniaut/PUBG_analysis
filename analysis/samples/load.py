@@ -54,7 +54,7 @@ def _save_match_as_file(pubg: PUBG, match_id: str, path: str):
     return match
 
 
-def _open_match_from_file(match_id: str, path: str) -> Match:
+def _open_match_from_file(pubg: PUBG, match_id: str, path: str) -> Match:
     dir_path = os.path.join(path, f'match_{match_id}')
     match_path = os.path.join(dir_path, 'match.json')
     
@@ -68,8 +68,9 @@ def _open_match_from_file(match_id: str, path: str) -> Match:
 def load_match(pubg: PUBG, match_id: str) -> Match:
     samples_path = os.path.join(os.getcwd(), r'analysis\samples\samples')
     try:
-        match = _open_match_from_file(match_id, samples_path)
+        match = _open_match_from_file(pubg, match_id, samples_path)
     except Exception as e:
+        print(e.__str__())
         print(f'[LOG]\tNo match - {match_id}')
         match = _save_match_as_file(pubg, match_id, samples_path)
 

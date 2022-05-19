@@ -27,7 +27,7 @@ def test(telemetry_obj: Telemetry.Telemetry):
         if event.killer is not None
     ]
     for a, b, event in modded_events:
-        if a:
+        if int(sum(a)) * int(sum(b)) == 0:
             print([event])
     return modded_events
 

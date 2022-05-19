@@ -9,6 +9,7 @@ from chicken_dinner.pubgapi import PUBG
 
 import analysis.utils.kill as Kill
 import analysis.utils.plot as Plot
+import analysis.utils.auth as Auth
 import analysis.samples.load as Load
 import tests.heatmap as Heatmap
 
@@ -50,35 +51,27 @@ def plot_kill(kills: list, *, mode: str, hset: tuple):
 
 
 if __name__ == "__main__":
-    api_key = None
-    with open(r".\my_api", mode="r") as api_key_file:
-        api_key = api_key_file.read()
-        print(api_key)
-
-    pubg = PUBG(api_key=api_key, shard='steam')
+    pubg = Auth.pubg()
     
     hset = Heatmap.ready_heatmap()
 
     samples = pubg.samples().match_ids[:5]
-    for s in samples:
-        match = pubg.match(s)
+    for s_id in samples:
+        match = Load.load_match(pubg, s_id)
 
         if match.map_id != 'Baltic_Main':
             print('Nah.', match.game_mode, match.map_id)
             continue
         
         print(match.id, 'is working!')
-        try:
-            tel = Load.load(match.id)
-        except:
-            tel = match.get_telemetry()
 
-        kill_datas = Kill.get_kills(tel)
+        telemetry = Load.load_telemetry(match)
+        kill_datas = Kill.get_kills(telemetry)
 
         map_id: str = match.map_id.replace(" ", "_")
         for b, f in [('Heaven', 'Haven'), ('Tiger', 'Taego'), ('Baltic', 'Erangel')]:
             map_id = map_id.replace(b, f)
-        plot_kill(kill_datas, mode='O', hset=hset)
+        plot_kill(kill_datas, mode='.O', hset=hset)
     
     Heatmap.plot_heatmap(*hset)
 

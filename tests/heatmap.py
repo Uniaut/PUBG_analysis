@@ -1,8 +1,8 @@
-from typing import Literal
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.colors as mplc
-import cv2
+
+
+STICKER_SIGMA = 100.0
 
 
 def sticker(xx, yy, pos: tuple, sigma: float):
@@ -17,8 +17,6 @@ def sticker(xx, yy, pos: tuple, sigma: float):
 
 
 def ready_heatmap():
-    value_map = np.zeros((1600, 1600))
-
     x = np.linspace(0, 10000, 400)
     y = np.linspace(0, 10000, 400)
 
@@ -29,7 +27,7 @@ def ready_heatmap():
 
 
 def add_sticker(xx, yy, z, *, pos: tuple, amp: float):
-    z += sticker(xx, yy, pos, 200.0) * amp
+    z += sticker(xx, yy, pos, STICKER_SIGMA) * amp
 
 
 def plot_heatmap(xx, yy, z):

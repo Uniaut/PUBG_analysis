@@ -55,25 +55,31 @@ if __name__ == "__main__":
     
     hset = Heatmap.ready_heatmap()
 
-    samples = pubg.samples().match_ids[:5]
+    # samples = pubg.samples().match_ids[:100]
+    samples = Load.samples()
+    valid_match_cnt = 0
     for s_id in samples:
         match = Load.load_match(pubg, s_id)
 
-        if match.map_id != 'Baltic_Main':
+        if match.map_id != 'Desert_Main':
             print('Nah.', match.game_mode, match.map_id)
             continue
         
         print(match.id, 'is working!')
+        valid_match_cnt += 1
 
         telemetry = Load.load_telemetry(match)
         kill_datas = Kill.get_kills(telemetry)
+        plot_kill(kill_datas, mode='O', hset=hset)
 
-        map_id: str = match.map_id.replace(" ", "_")
-        for b, f in [('Heaven', 'Haven'), ('Tiger', 'Taego'), ('Baltic', 'Erangel')]:
-            map_id = map_id.replace(b, f)
-        plot_kill(kill_datas, mode='.O', hset=hset)
+        
+        if valid_match_cnt >= 50:
+            break
     
     Heatmap.plot_heatmap(*hset)
 
+    map_id: str = match.map_id.replace(" ", "_")
+    for b, f in [('Heaven', 'Haven'), ('Tiger', 'Taego'), ('Baltic', 'Erangel')]:
+        map_id = map_id.replace(b, f)
     Plot.plot_map(map_id, "High")
     plt.show()

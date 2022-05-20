@@ -18,6 +18,7 @@ def get_kills(telemetry_obj: Telemetry.Telemetry):
         for event in telemetry_obj.filter_by('log_player_kill_v2')
         if event.killer is not None
     ]
+    modded_events = [p for p in modded_events if int(sum(p[0]) * sum(p[1])) != 0]
     return modded_events
 
 def test(telemetry_obj: Telemetry.Telemetry):

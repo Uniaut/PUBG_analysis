@@ -6,9 +6,9 @@ STICKER_SIGMA = 100.0
 
 
 def sticker(xx, yy, pos: tuple, sigma: float):
-    '''
+    """
     add gaussian kernel sticker
-    '''
+    """
     var = sigma ** 2
     pos_x, pos_y = pos
     dist = (xx - pos_x) ** 2 + (yy - pos_y) ** 2

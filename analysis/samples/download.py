@@ -12,11 +12,15 @@ get matches from sample in pubg api
 directory
 matches
 L match_0
-  L breif
+  L match
   L telemetry
+  L pickle_0
+  L pickle_1
 L match_1
-  L breif
+  L match
   L telemetry
+  L pickle_0
+  L pickle_1
 .
 .
 .

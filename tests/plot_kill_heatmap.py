@@ -1,7 +1,4 @@
-import datetime
-import json
 import matplotlib.pyplot as plt
-import os
 
 from chicken_dinner.models.match import Match
 from chicken_dinner.models.telemetry import Telemetry
@@ -38,7 +35,7 @@ def plot_kill(kills: list, *, mode: str, hset: tuple):
             plt.plot(vx, vy, color='#00FF00', marker='o')
 
         if 'O' in mode:
-            Heatmap.add_sticker(*hset, pos=(kx, ky), amp=1.0)
+            Heatmap.add_sticker(*hset, pos=(kx, ky), amp=0.1)
             Heatmap.add_sticker(*hset, pos=(vx, vy), amp=-1.0)
 
         if '-' in mode:
@@ -69,9 +66,10 @@ if __name__ == '__main__':
         kill_datas = Kill.get_kills(s_id, telemetry)
         plot_kill(kill_datas, mode='O', hset=hset)
 
-        if valid_match_cnt >= 10:
+        if valid_match_cnt >= 100:
             break
 
+    print(valid_match_cnt)
     Heatmap.plot_heatmap(*hset)
 
     map_id: str = match.map_id.replace(' ', '_')

@@ -19,6 +19,9 @@ import glob
 import json
 import os
 import pickle
+from typing import Any
+from typing import Callable
+from typing import TypeVar
 
 from chicken_dinner.models.match import Match
 from chicken_dinner.models.telemetry import Telemetry
@@ -117,8 +120,8 @@ def _save_obj_as_pickle(match_id, file_name, obj):
         pickle.dump(obj, pickle_file)
     return obj
 
-
-def pickle_loader(_name):
+R = TypeVar('R')
+def pickle_loader(_name: str):
     '''
     [Decorator] save result as pickle
     if pickle exists load else run func
@@ -127,8 +130,8 @@ def pickle_loader(_name):
     _mid - match id
     *args - function arguments 
     '''
-    def wrap(func):
-        def inside(_mid, *args):
+    def wrap(func: Callable[..., R]) -> Callable[..., R]:
+        def inside(_mid: str, *args: Any) -> R:
             if _mid is None:
                 return func(*args)
 

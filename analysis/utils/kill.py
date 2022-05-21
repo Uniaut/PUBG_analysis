@@ -2,16 +2,17 @@ import datetime
 
 import chicken_dinner.models.match as Match
 import chicken_dinner.models.telemetry as Telemetry
+import chicken_dinner.models.telemetry.objects as TelObj
 from chicken_dinner.pubgapi import PUBG
 
 import analysis.utils.auth as Auth
 import analysis.samples.load as Load
 
 
-def preprocess_location(location) -> tuple:
+def preprocess_location(location: TelObj.TelemetryObject) -> tuple:
     return tuple(map(lambda v: v / 100, (location.x, location.y, location.z)))
 
-
+@Load.pickle_loader('kills.pickle')
 def get_kills(telemetry_obj: Telemetry.Telemetry):
     modded_events = [
         (preprocess_location(event.killer.location), preprocess_location(event.victim.location))
@@ -21,16 +22,6 @@ def get_kills(telemetry_obj: Telemetry.Telemetry):
     modded_events = [p for p in modded_events if int(sum(p[0]) * sum(p[1])) != 0]
     return modded_events
 
-def test(telemetry_obj: Telemetry.Telemetry):
-    modded_events = [
-        (preprocess_location(event.killer.location), preprocess_location(event.victim.location), event)
-        for event in telemetry_obj.filter_by('log_player_kill_v2')
-        if event.killer is not None
-    ]
-    for a, b, event in modded_events:
-        if int(sum(a)) * int(sum(b)) == 0:
-            print([event])
-    return modded_events
 
 if __name__ == "__main__":
     pubg = Auth.pubg()
@@ -40,4 +31,3 @@ if __name__ == "__main__":
         print(f'Loading {s_id}')
         match = Load.load_match(pubg, s_id)
         telemetry = Load.load_telemetry(match)
-        test(telemetry)

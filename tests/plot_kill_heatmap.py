@@ -3,8 +3,8 @@ import json
 import matplotlib.pyplot as plt
 import os
 
-import chicken_dinner.models.match as Match
-import chicken_dinner.models.telemetry as Telemetry
+from chicken_dinner.models.match import Match
+from chicken_dinner.models.telemetry import Telemetry
 from chicken_dinner.pubgapi import PUBG
 
 import analysis.utils.kill as Kill
@@ -52,11 +52,11 @@ if __name__ == '__main__':
 
     hset = Heatmap.ready_heatmap()
 
-    # samples = pubg.samples().match_ids[:100]
-    samples = Load.samples()
+    # samples = Load.samples()
+    samples = pubg.samples().match_ids
     valid_match_cnt = 0
     for s_id in samples:
-        match = Load.load_match(pubg, s_id)
+        match: Match = Load.get_match(s_id, pubg, s_id)
 
         if match.map_id != 'Baltic_Main':
             print('Nah.', match.game_mode, match.map_id)
@@ -65,11 +65,11 @@ if __name__ == '__main__':
         print(match.id, 'is working!')
         valid_match_cnt += 1
 
-        telemetry = Load.load_telemetry(match)
-        kill_datas = Kill.get_kills(telemetry)
+        telemetry: Telemetry = Load.get_telemetry(s_id, match)
+        kill_datas = Kill.get_kills(s_id, telemetry)
         plot_kill(kill_datas, mode='O', hset=hset)
 
-        if valid_match_cnt >= 50:
+        if valid_match_cnt >= 10:
             break
 
     Heatmap.plot_heatmap(*hset)

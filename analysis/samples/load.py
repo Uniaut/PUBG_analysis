@@ -27,6 +27,11 @@ from chicken_dinner.pubgapi import PUBG
 
 SAMPLES_PATH = os.path.join(os.getcwd(), r'analysis\samples\samples')
 
+
+def _file_path(match_id, file_name):
+    return os.path.join(SAMPLES_PATH, f'match_{match_id}', file_name)
+
+
 def _save_telemetry_as_file(match: Match, path: str) -> Telemetry:
     telemetry = match.get_telemetry()
     
@@ -48,6 +53,7 @@ def _open_telemetry_from_file(match_id: str, path: str) -> Telemetry:
 
 
 def load_telemetry(match: Match) -> Telemetry:
+    print(f'[WARNING]\tDeprecated function: {load_telemetry.__name__}')
     try:
         telemetry = _open_telemetry_from_file(match.id, SAMPLES_PATH)
     except Exception as e:
@@ -81,6 +87,7 @@ def _open_match_from_file(pubg: PUBG, match_id: str, path: str) -> Match:
 
 
 def load_match(pubg: PUBG, match_id: str) -> Match:
+    print(f'[WARNING]\tDeprecated function: {load_match.__name__}')
     try:
         match = _open_match_from_file(pubg, match_id, SAMPLES_PATH)
     except Exception as e:
@@ -90,27 +97,22 @@ def load_match(pubg: PUBG, match_id: str) -> Match:
 
     return match
 
-'''
-if exists(match_id, file_name):
-    load(match_id, file_name)
-else:
-    save(match_id, file_name)
-'''
 
 def _is_pickle_exists(match_id, file_name):
-    pickle_path = os.path.join(SAMPLES_PATH, f'match_{match_id}', file_name)
+    pickle_path = _file_path(match_id, file_name)
     return os.path.exists(pickle_path)
 
 
 def _open_obj_from_pickle(match_id, file_name):
-    pickle_path = os.path.join(SAMPLES_PATH, f'match_{match_id}', file_name)
+    pickle_path = _file_path(match_id, file_name)
     with open(pickle_path, 'rb') as pickle_file:
         obj = pickle.load(pickle_file)
     return obj
 
 
 def _save_obj_as_pickle(match_id, file_name, obj):
-    pickle_path = os.path.join(SAMPLES_PATH, f'match_{match_id}', file_name)
+    pickle_path = _file_path(match_id, file_name)
+    os.makedirs(os.path.dirname(pickle_path), exist_ok=True)
     with open(pickle_path, 'wb') as pickle_file:
         pickle.dump(obj, pickle_file)
     return obj
@@ -119,26 +121,35 @@ def _save_obj_as_pickle(match_id, file_name, obj):
 def pickle_loader(_name):
     '''
     [Decorator] save result as pickle
-    if there is pickle, just load 
+    if pickle exists load else run func
+    param:
+    _name - file name
+    _mid - match id
+    *args - function arguments 
     '''
     def wrap(func):
-        def inside(*args, match_id: str=None):
-            if match_id is None:
+        def inside(_mid, *args):
+            if _mid is None:
                 return func(*args)
 
-            if _is_pickle_exists(match_id, _name):
-                obj = _open_obj_from_pickle(match_id, _name)
+            if _is_pickle_exists(_mid, _name):
+                obj = _open_obj_from_pickle(_mid, _name)
             else:
-                print(f'[LOG]\tNo pickle \'{_name}\' in {match_id}')
-                obj = _save_obj_as_pickle(match_id, _name, func(*args))
+                print(f'[LOG]\tNo pickle \'{_name}\' in {_mid}')
+                obj = _save_obj_as_pickle(_mid, _name, func(*args))
             return obj
         return inside
     return wrap
 
 
-@pickle_loader('modify')
-def modify(telemetry: Telemetry):
-    return telemetry.circle_positions()
+@pickle_loader('match.pickle')
+def get_match(pubg: PUBG, match_id: str) -> Match:
+    return pubg.match(match_id)
+
+
+@pickle_loader('telemetry.pickle')
+def get_telemetry(match: Match) -> Telemetry:
+    return match.get_telemetry()
 
 
 def samples() -> list[str]:

@@ -15,12 +15,13 @@ L match_1
 L ...
 
 '''
+from collections.abc import Callable
+from functools import wraps
 import glob
 import json
 import os
 import pickle
-from typing import Any
-from typing import Callable
+from typing import Any 
 from typing import TypeVar
 
 from chicken_dinner.models.match import Match
@@ -120,6 +121,7 @@ def _save_obj_as_pickle(match_id, file_name, obj):
         pickle.dump(obj, pickle_file)
     return obj
 
+
 R = TypeVar('R')
 def pickle_loader(_name: str):
     '''
@@ -131,7 +133,8 @@ def pickle_loader(_name: str):
     *args - function arguments 
     '''
     def wrap(func: Callable[..., R]) -> Callable[..., R]:
-        def inside(_mid: str, *args: Any) -> R:
+        @wraps(func)
+        def inside(_mid: str, *args, **kwargs) -> R:
             if _mid is None:
                 return func(*args)
 

@@ -1,8 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+import tests.mapsize as Mapsize
 
-STICKER_SIGMA = 100.0
+
+STICKER_SIGMA = 20.0
 
 
 def sticker(xx, yy, pos: tuple, sigma: float):
@@ -16,14 +18,19 @@ def sticker(xx, yy, pos: tuple, sigma: float):
     return sticker_map
 
 
-def ready_heatmap():
-    x = np.linspace(0, 10000, 400)
-    y = np.linspace(0, 10000, 400)
-
+def ready_heatmap(map_id: str, num_split: int):
+    x_size, y_size = Mapsize.mapsize(map_id)
+    x_range = (x_size * 0.4, x_size * 0.6)
+    y_range = (y_size * 0.4, y_size * 0.6)
+    x = np.linspace(*x_range, num_split)
+    y = np.linspace(*y_range, num_split)
+    print(f'Cell size: {x_size / num_split}x{x_size / num_split}')
     xx, yy = np.meshgrid(x, y, indexing='xy', sparse=True)
-    z = xx * yy * 0
+    return xx, yy
 
-    return xx, yy, z
+
+def new_grid(xx, yy):
+    return xx, yy, (xx + yy) * 0
 
 
 def add_sticker(xx, yy, z, *, pos: tuple, amp: float):

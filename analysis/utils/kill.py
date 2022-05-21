@@ -12,7 +12,6 @@ import analysis.samples.load as Load
 def preprocess_location(location: TelObj.TelemetryObject) -> tuple:
     return tuple(map(lambda v: v / 100, (location.x, location.y, location.z)))
 
-@Load.pickle_loader('kills.pickle')
 def get_kills(telemetry_obj: Telemetry.Telemetry):
     modded_events = [
         (preprocess_location(event.killer.location), preprocess_location(event.victim.location))

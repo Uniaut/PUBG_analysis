@@ -1,5 +1,7 @@
-samples/*
+analysis/samples/samples/*
 my_api
 
 __pycache__/*
 *.pyc
+
+asset/*

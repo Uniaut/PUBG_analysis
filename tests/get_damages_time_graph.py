@@ -25,8 +25,8 @@ from matplotlib.animation import FuncAnimation
 
 # 교전시작시각 리스트(int형으로해서 중복제거 & 15초내 범위에 있는 교전 cluster)
 def get_damage_start_time(playername):
-    file_path = "player_damages/player_damages.json"
-    with open(file_path, "r") as f:
+    file_path = 'player_damages/player_damages.json'
+    with open(file_path, 'r') as f:
         player_damages_json = json.load(f)
 
     # json파일에 있는 교전 시간 int형으로 변환해서 중복은 제거
@@ -55,22 +55,22 @@ def get_damage_start_time(playername):
 
 
 api_key = None
-with open(".\\my_api", mode="r") as api_key_file:
+with open('.\\my_api', mode='r') as api_key_file:
     api_key = api_key_file.read()
     # print(api_key)
-pubg = PUBG(api_key=api_key, shard="steam")
-match = pubg.match("0b09c0b4-8815-49bb-8603-cac5c82b7d99")
+pubg = PUBG(api_key=api_key, shard='steam')
+match = pubg.match('0b09c0b4-8815-49bb-8603-cac5c82b7d99')
 
 match_model = chicken_dinner.models.match.Match(
-    pubg, "0b09c0b4-8815-49bb-8603-cac5c82b7d99"
+    pubg, '0b09c0b4-8815-49bb-8603-cac5c82b7d99'
 )  # 매치 디테일모델
 match_get_telemetry = match_model.get_telemetry(map_assets=False)  # telemetry object
 
 
 # player_damages json 파일 생성
-file_path = "player_damages/player_damages.json"
+file_path = 'player_damages/player_damages.json'
 player_damages = match_get_telemetry.player_damages(include_pregame=False)
-with open(file_path, "w") as f:
+with open(file_path, 'w') as f:
     json.dump(player_damages, f, ensure_ascii=False, indent=4)
 
 
@@ -92,7 +92,7 @@ for i in player_list:
 
 # 각 플레이어별 교전 시작 시간 출력
 for i in player_list:
-    print(i, ":", get_damage_start_time(i))
+    print(i, ':', get_damage_start_time(i))
 
 
 # 전체 플레이어들 산점도 출력

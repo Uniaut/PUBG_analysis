@@ -13,10 +13,12 @@ import math
 from matplotlib.animation import FuncAnimation
 import pandas as pd
 import urllib.request as req
-
 import chicken_dinner.models.match as PUBG_match
 import chicken_dinner.models.telemetry as PUBG_telemetry
 from chicken_dinner.pubgapi import PUBG
+
+import analysis.samples.load as Load
+import analysis.utils.plot as Plot
 
 
 def plot_map_img(map_name=None, res_option='Low'):
@@ -182,10 +184,11 @@ with open('.\\my_api', mode='r') as api_key_file:
     api_key = api_key_file.read()
     print(api_key)
 pubg = PUBG(api_key=api_key, shard='steam')
-match = pubg.match('c4b89079-795b-49ff-a134-c02b6aa73c77')
+sample_id = Load.samples()[0]
+match = Load.get_match(sample_id, pubg, sample_id)
 
 winner_kill_position = Winner_Kill_Position(match)
-plot_map_img(match.map_name, 'Low')
+Plot.plot_map(match.map_id, 'Low')
 winner_movement = winner_position(match)
 plot_positions(winner_movement)
 engage_circle(winner_kill_position)

@@ -12,7 +12,7 @@ import analysis.samples.load as Load
 def preprocess_location(location: TelObj.TelemetryObject) -> tuple:
     return tuple(map(lambda v: v / 100, (location.x, location.y, location.z)))
 
-def get_kills(telemetry_obj: Telemetry.Telemetry):
+def get_kill_location(telemetry_obj: Telemetry.Telemetry):
     modded_events = [
         (preprocess_location(event.killer.location), preprocess_location(event.victim.location))
         for event in telemetry_obj.filter_by('log_player_kill_v2')
@@ -25,7 +25,7 @@ def get_kills(telemetry_obj: Telemetry.Telemetry):
 if __name__ == "__main__":
     pubg = Auth.pubg()
 
-    samples = pubg.samples().match_ids[:2]
+    samples = pubg.samples().match_ids[1:2]
     for s_id in samples:
         print(f'Loading {s_id}')
         match = Load.load_match(pubg, s_id)

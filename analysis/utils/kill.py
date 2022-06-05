@@ -1,18 +1,14 @@
-import datetime
-
-import chicken_dinner.models.match as Match
-import chicken_dinner.models.telemetry as Telemetry
-import chicken_dinner.models.telemetry.objects as TelObj
-from chicken_dinner.pubgapi import PUBG
+from chicken_dinner.models.telemetry.telemetry import Telemetry
+from chicken_dinner.models.telemetry.objects import TelemetryObject
 
 import analysis.utils.auth as Auth
 import analysis.samples.load as Load
 
 
-def preprocess_location(location: TelObj.TelemetryObject) -> tuple:
+def preprocess_location(location: TelemetryObject) -> tuple:
     return tuple(map(lambda v: v / 100, (location.x, location.y, location.z)))
 
-def get_kill_location(telemetry_obj: Telemetry.Telemetry):
+def get_kill_location(telemetry_obj: Telemetry):
     modded_events = [
         (preprocess_location(event.killer.location), preprocess_location(event.victim.location))
         for event in telemetry_obj.filter_by('log_player_kill_v2')

@@ -1,11 +1,11 @@
 import gzip
 import json
-from operator import truediv
 import os
-from textwrap import indent
 import urllib.request
-from chicken_dinner.pubgapi import PUBG
+from operator import truediv
+from textwrap import indent
 
+from chicken_dinner.pubgapi import PUBG
 
 file_path = 'seasonID/seasonID.json'
 with open(file_path, 'r') as f:

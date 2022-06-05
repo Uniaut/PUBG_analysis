@@ -2,6 +2,7 @@ import gzip
 import json
 import os
 import urllib.request
+
 from chicken_dinner.pubgapi import PUBG
 
 req = urllib.request.Request(

@@ -1,21 +1,20 @@
-from ast import AsyncFunctionDef
+import datetime
 import gzip
 import json
-import os
-import datetime
-import numpy as np
-from math import sin, cos
-import PIL.Image
-import os.path
-
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches  # 원 추가
 import math
-from matplotlib.animation import FuncAnimation
-import pandas as pd
+import os
+import os.path
 import urllib.request as req
+from ast import AsyncFunctionDef
+from math import cos, sin
 
+import matplotlib.patches as patches  # 원 추가
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import PIL.Image
 from chicken_dinner.pubgapi import PUBG
+from matplotlib.animation import FuncAnimation
 
 # import chicken_dinner.types as PUBGType
 

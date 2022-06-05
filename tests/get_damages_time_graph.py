@@ -1,25 +1,24 @@
+import datetime
 import gzip
 import json
-from optparse import Values
+import math
 import os
+import os.path
+import random
+import urllib.request as req
+from math import cos, sin
+from optparse import Values
 from re import A, X
 from tkinter import Y
 
-import matplotlib
 import chicken_dinner
-from chicken_dinner.pubgapi import PUBG
-import datetime
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
-from math import sin, cos
-import PIL.Image
-import os.path
-import urllib.request as req
-import random
+import matplotlib
 import matplotlib.patches as patches  # 원 추가
-import math
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import PIL.Image
+from chicken_dinner.pubgapi import PUBG
 from matplotlib.animation import FuncAnimation
 
 

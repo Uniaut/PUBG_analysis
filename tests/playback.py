@@ -4,12 +4,10 @@ import random
 
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
-from matplotlib import patheffects
-from matplotlib import rc
-from matplotlib.animation import FuncAnimation
-
 from chicken_dinner.constants import COLORS
 from chicken_dinner.pubgapi import PUBG
+from matplotlib import patheffects, rc
+from matplotlib.animation import FuncAnimation
 
 rc('animation', embed_limit=100)
 

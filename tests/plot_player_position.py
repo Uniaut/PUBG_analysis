@@ -1,13 +1,13 @@
 import json
-import matplotlib.pyplot as plt
 import os
 
 import chicken_dinner.models.match as Match
 import chicken_dinner.models.telemetry as Telemetry
+import matplotlib.pyplot as plt
 from chicken_dinner.pubgapi import PUBG
 
-import analysis.utils.position as Position
 import analysis.utils.plot as Plot
+import analysis.utils.position as Position
 
 
 def spectrum(progress) -> str:

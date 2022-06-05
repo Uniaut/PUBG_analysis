@@ -1,21 +1,21 @@
+import datetime
 import gzip
 import json
-import os
-import datetime
-import numpy as np
-from math import sin, cos
-import PIL.Image
-import os.path
-
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches  # 원 추가
 import math
-from matplotlib.animation import FuncAnimation
-import pandas as pd
+import os
+import os.path
 import urllib.request as req
+from math import cos, sin
+
 import chicken_dinner.models.match as PUBG_match
 import chicken_dinner.models.telemetry as PUBG_telemetry
+import matplotlib.patches as patches  # 원 추가
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import PIL.Image
 from chicken_dinner.pubgapi import PUBG
+from matplotlib.animation import FuncAnimation
 
 import analysis.samples.load as Load
 import analysis.utils.plot as Plot
